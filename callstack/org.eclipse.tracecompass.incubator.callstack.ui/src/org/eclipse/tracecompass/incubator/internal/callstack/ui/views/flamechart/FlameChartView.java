@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -50,6 +51,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.RGBA;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.tracecompass.analysis.os.linux.core.model.HostThread;
@@ -60,10 +62,18 @@ import org.eclipse.tracecompass.incubator.callstack.core.instrumented.ICalledFun
 import org.eclipse.tracecompass.incubator.callstack.core.instrumented.IFlameChartProvider;
 import org.eclipse.tracecompass.incubator.callstack.core.instrumented.statesystem.CallStackSeries;
 import org.eclipse.tracecompass.incubator.callstack.core.instrumented.statesystem.InstrumentedCallStackAnalysis;
+import org.eclipse.tracecompass.incubator.callstackanomaly.ui.config.CallStackAnomalyAnalysisConfigDialog;
 import org.eclipse.tracecompass.incubator.internal.callstack.core.instrumented.InstrumentedCallStackElement;
 import org.eclipse.tracecompass.incubator.internal.callstack.ui.Activator;
+import org.eclipse.tracecompass.incubator.internal.callstackanomaly.core.analysis.CallStackAnomalyAnalysis;
+import org.eclipse.tracecompass.incubator.internal.callstackanomaly.core.analysis.CallStackAnomalyAnalysisParameters;
+import org.eclipse.tracecompass.incubator.internal.callstackanomaly.core.analysis.CallStackAnomalyAnalysisProvider;
 import org.eclipse.tracecompass.internal.analysis.os.linux.ui.actions.FollowThreadAction;
+import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;
+import org.eclipse.tracecompass.statesystem.core.exceptions.AttributeNotFoundException;
+import org.eclipse.tracecompass.statesystem.core.exceptions.StateSystemDisposedException;
 import org.eclipse.tracecompass.statesystem.core.interval.ITmfStateInterval;
+import org.eclipse.tracecompass.tmf.core.exceptions.TmfAnalysisException;
 import org.eclipse.tracecompass.tmf.core.signal.TmfSelectionRangeUpdatedSignal;
 import org.eclipse.tracecompass.tmf.core.signal.TmfSignalHandler;
 import org.eclipse.tracecompass.tmf.core.signal.TmfTraceClosedSignal;
@@ -93,6 +103,7 @@ import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.widgets.TimeGraphContro
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchActionConstants;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
@@ -128,6 +139,9 @@ public class FlameChartView extends AbstractTimeGraphView {
     private static final Image STACKFRAME_IMAGE = Activator.getDefault().getImageFromPath("icons/obj16/stckframe_obj.gif"); //$NON-NLS-1$
 
     private static final String IMPORT_BINARY_ICON_PATH = "icons/obj16/binaries_obj.gif"; //$NON-NLS-1$
+    private static final @NonNull String CALLSTACK_ANOMALY_ICON_PATH = "icons/obj16/csanomaly_obj.gif"; //$NON-NLS-1$
+    private static final int CALLSTACK_ANOMALY_BOOKMARK_RED = 255;
+    private static final double CALLSTACK_ANOMALY_ALPHA_MAX = 128.0;
 
     private static final ImageDescriptor SORT_BY_NAME_ICON = Activator.getDefault().getImageDescripterFromPath("icons/etool16/sort_alpha.gif"); //$NON-NLS-1$
     private static final ImageDescriptor SORT_BY_NAME_REV_ICON = Activator.getDefault().getImageDescripterFromPath("icons/etool16/sort_alpha_rev.gif"); //$NON-NLS-1$
@@ -168,6 +182,9 @@ public class FlameChartView extends AbstractTimeGraphView {
     // The saved window range signal used when switching off the pinning of
     // a view
     private TmfWindowRangeUpdatedSignal fSavedRangeSyncSignal;
+
+ // The action to start the callstack anomaly analysis
+    private @Nullable Action fCallStackAnomalyAnalysisAction;
 
     // When set to a value, if syncToTime() syncs to this value, it will select the
     // first call stack entry whose current state start time exactly matches this
@@ -839,6 +856,8 @@ public class FlameChartView extends AbstractTimeGraphView {
 
     @Override
     protected void fillLocalToolBar(IToolBarManager manager) {
+        manager.appendToGroup(IWorkbenchActionConstants.MB_ADDITIONS, getCallStackAnomalyAnalysisAction());
+        manager.appendToGroup(IWorkbenchActionConstants.MB_ADDITIONS, new Separator());
         manager.appendToGroup(IWorkbenchActionConstants.MB_ADDITIONS, getConfigureSymbolsAction());
         manager.appendToGroup(IWorkbenchActionConstants.MB_ADDITIONS, new Separator());
         manager.appendToGroup(IWorkbenchActionConstants.MB_ADDITIONS, getSortByNameAction());
@@ -1163,6 +1182,122 @@ public class FlameChartView extends AbstractTimeGraphView {
     private void updateConfigureSymbolsAction() {
         ISymbolProviderPreferencePage[] providerPages = getProviderPages();
         getConfigureSymbolsAction().setEnabled(providerPages.length > 0);
+    }
+
+    // ------------------------------------------------------------------------
+    // Methods related to callstack anomaly analysis
+    // ------------------------------------------------------------------------
+
+    /**
+     * Add a bookmark
+     *
+     * @param time
+     *            the timestamp
+     * @param duration
+     *            the duration/width
+     * @param label
+     *            the bookmark label
+     * @param rgba
+     *            the color
+     * @since 1.1
+     */
+    public void addBookmark(long time, long duration, String label, RGBA rgba) {
+        Display.getDefault().asyncExec(() -> getTimeGraphViewer().addBookmark(time, duration, label, rgba));
+    }
+
+    /**
+     * Get action for running callstack anomaly analysis
+     *
+     * @since 1.1
+     */
+    private Action getCallStackAnomalyAnalysisAction() {
+        if (fCallStackAnomalyAnalysisAction != null) {
+            return fCallStackAnomalyAnalysisAction;
+        }
+
+        Action callStackAnomalyAnalysisAction = new Action(Messages.CallStackView_CallStackAnomalyAnalysisText) {
+            @Override
+            public void run() {
+                final CallStackAnomalyAnalysisConfigDialog dialog = new CallStackAnomalyAnalysisConfigDialog(getSite().getShell());
+                if (dialog.open() == IDialogConstants.OK_ID) {
+                    // Get parameters from dialog
+                    final CallStackAnomalyAnalysisParameters parameters = dialog.getParameters();
+
+                    ITmfTrace trace = getTrace();
+                    if (trace == null) {
+                        return;
+                    }
+                    Job runAnalysis = new Job("Running analysis") { //$NON-NLS-1$
+                        @Override
+                        protected IStatus run(@Nullable IProgressMonitor monitor) {
+                            IProgressMonitor mon = (monitor == null) ? new NullProgressMonitor() : monitor;
+                            final CallStackAnomalyAnalysis callstackAnomalyAnalysis = new CallStackAnomalyAnalysis(parameters, mon);
+                            try {
+                                // Execute analysis
+                                callstackAnomalyAnalysis.setTrace(trace);
+                                callstackAnomalyAnalysis.schedule();
+                                // Might remove and display results as they come
+                                callstackAnomalyAnalysis.waitForCompletion();
+
+                                // Display
+                                ITmfStateSystem ss = callstackAnomalyAnalysis.getStateSystem();
+                                if (ss != null && ss.getNbAttributes() > 0) {
+                                    mon.subTask("displaying results"); //$NON-NLS-1$
+                                    long start = ss.getStartTime();
+                                    long end = ss.getCurrentEndTime();
+                                    int minQuark = ss.getQuarkAbsolute(CallStackAnomalyAnalysisProvider.ATTRIBUTE_INFO, CallStackAnomalyAnalysisProvider.ATTRIBUTE_MIN);
+                                    int maxQuark = ss.getQuarkAbsolute(CallStackAnomalyAnalysisProvider.ATTRIBUTE_INFO, CallStackAnomalyAnalysisProvider.ATTRIBUTE_MAX);
+                                    int thresholdQuark = ss.getQuarkAbsolute(CallStackAnomalyAnalysisProvider.ATTRIBUTE_INFO, CallStackAnomalyAnalysisProvider.ATTRIBUTE_THRESHOLD);
+                                    int resultQuark = ss.getQuarkAbsolute(CallStackAnomalyAnalysisProvider.ATTRIBUTE_RESULTS);
+                                    Double minScore = (Double) ss.querySingleState(start, minQuark).getValue();
+                                    Double maxScore = (Double) ss.querySingleState(start, maxQuark).getValue();
+                                    Double threshold = (Double) ss.querySingleState(start, thresholdQuark).getValue();
+
+                                    if (minScore != null && maxScore != null && threshold != null) {
+                                        List<@NonNull Integer> depthsQuarks = ss.getSubAttributes(resultQuark, false);
+                                        for (int depthQuark : depthsQuarks) {
+                                            String depth = ss.getAttributeName(depthQuark);
+                                            Iterable<ITmfStateInterval> depthResults = ss.query2D(ImmutableList.of(depthQuark), start, end);
+                                            depthResults.forEach(itv -> {
+                                                Double score = (Double) itv.getValue();
+                                                if (score != null) {
+                                                    Double normalized = (score - minScore) / (maxScore - minScore);
+                                                    if (normalized >= threshold) {
+                                                        final long tStart = itv.getStartTime();
+                                                        final long tDuration = itv.getEndTime() - tStart;
+                                                        final int alpha = (int) (CALLSTACK_ANOMALY_ALPHA_MAX * normalized);
+                                                        final String label = String.format("%.2f [%s]", normalized, depth); //$NON-NLS-1$
+                                                        addBookmark(
+                                                                tStart,
+                                                                tDuration,
+                                                                label,
+                                                                new RGBA(CALLSTACK_ANOMALY_BOOKMARK_RED, 0, 0, alpha));
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    }
+                                }
+                                mon.worked(1);
+                                mon.done();
+                            } catch (TmfAnalysisException | StateSystemDisposedException | AttributeNotFoundException e) {
+                                return new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e);
+                            } finally {
+                                callstackAnomalyAnalysis.dispose();
+                            }
+                            return Status.OK_STATUS;
+                        }
+                    };
+                    runAnalysis.schedule();
+                }
+            }
+        };
+
+        callStackAnomalyAnalysisAction.setToolTipText(Messages.CallStackView_CallStackAnomalyAnalysisTooltip);
+        callStackAnomalyAnalysisAction.setImageDescriptor(Objects.requireNonNull(Activator.getDefault()).getImageDescripterFromPath(CALLSTACK_ANOMALY_ICON_PATH));
+
+        fCallStackAnomalyAnalysisAction = callStackAnomalyAnalysisAction;
+        return callStackAnomalyAnalysisAction;
     }
 
 }

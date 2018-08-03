@@ -32,6 +32,10 @@
     <module>org.eclipse.tracecompass.incubator.callstack.core.tests</module>
     <module>org.eclipse.tracecompass.incubator.callstack.ui</module>
     <module>org.eclipse.tracecompass.incubator.callstack.ui.swtbot.tests</module>
+    <module>org.eclipse.tracecompass.incubator.callstackanomaly</module>
+    <module>org.eclipse.tracecompass.incubator.callstackanomaly.core</module>
+    <module>org.eclipse.tracecompass.incubator.callstackanomaly.core.tests</module>
+    <module>org.eclipse.tracecompass.incubator.callstackanomaly.ui</module>
     <!-- insert modules here -->
   </modules>
 

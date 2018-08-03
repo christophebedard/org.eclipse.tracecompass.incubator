@@ -9,6 +9,7 @@
 
 package org.eclipse.tracecompass.incubator.internal.callstack.ui.views.flamechart;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.osgi.util.NLS;
 
 /**
@@ -55,6 +56,9 @@ public class Messages extends NLS {
     public static String CallStackView_PreviousStateChangeText;
 
     public static String CallStackView_KernelStatus;
+
+    public static @Nullable String CallStackView_CallStackAnomalyAnalysisText;
+    public static @Nullable String CallStackView_CallStackAnomalyAnalysisTooltip;
 
     static {
         // initialize resource bundle

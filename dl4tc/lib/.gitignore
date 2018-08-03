@@ -1,0 +1,2 @@
+# ignore JARs in lib/
+*.jar

@@ -1,0 +1,84 @@
+
+= CallStackAnomaly =
+
+User guide and quick description of the process.
+
+This is still very experimental.
+
+
+== Main goal ==
+
+Find areas of interest in a callstack from a UST trace. Those areas may or may not correspond to an anomaly or a fault.
+
+There are currently two methods:
+
+# statistics
+# machine learning
+
+
+== Usage ==
+
+With a UST trace which has callstack data, open the '''Flame Chart (incubator)''' view. Click on the "''Execute callstack anomaly analysis''" action button in the top right of the view (callstack with a red exclamation mark). The following dialog will open:
+
+[[Image:images/callstackanomalyanalysis_dialog.png]]
+
+The parameters in the upper portion of the dialog apply to all options, while the options in the lower portion apply to the selected method or action.
+
+=== Common ===
+
+The '''Target depth''' parameter allows the user to select the depth from which the callstacks are taken. More specifically, at this moment, the callstacks that are compared or fed into a NN are built by taking root calls from a target depth. This helps ignore functions such as ''main()'' or other functions that span a large section of the trace.
+
+The '''Serialize as primitive arrays''' option can be enabled in order to serialize data as primitive types, which could be used externally. Otherwise, the data  will be serialized and written to disk using a special scientific computing format.
+
+=== Method-specific ===
+
+==== Statistics ====
+
+This method checks for statistical outliers in an individual trace. It is available by selecting the '''Statistical''' tab.
+
+The '''N value''' parameter specifies the maximum deviation away from the mean in terms of standard deviations. Therefore, data that is farther away from the mean will be considered abnormal.
+
+==== Machine learning ====
+
+This method is to be used with multiple traces from the same application. The intended use is to train a NN model on a trace which is deemed "normal" and then apply this model to another trace in order to find areas of interest.
+
+For NN training, select the '''NN training''' tab. The usual parameters ('''Learning rate''', '''Number of epochs''', and '''Batch size''') can be set. The input and output layer sizes depend on the trace. However, the '''Hidden layers sizes''' box can be used to specific the number of hidden layers and their respective sizes in a comma-separated and ordered way. For example, ''15,5,10'' means there would be 3 hidden layers. The first one, right after the input layer, would have 15 nodes. Then the next one would have 5 nodes, and the last hidden layer would have 10 nodes. This box does not let the user input anything other than numbers and commas. Finally, the '''Export...''' button is used to select a folder to export the trained model and some useful metadata.
+
+For applying a trained model, select the '''NN detection''' tab. The '''Anomaly threshold''' parameter is used to specify the minimum displayed score. Therefore, this can be used to only display the worse cases. A value of ''0.00'' will show all results. Finally, the '''Import...''' button is used to select a folder from which to import a previously-trained model and its metadata.
+
+=== Output ===
+
+The output is displayed using bookmarks in the '''Flame Chart (incubator)''' view. Results are scored between 0 and 1; each individual callstack gets a score. This score, as well the depth from which the corresponding callstack was selected, is included in the bookmark's label (format: ''score [depth]''). Also, all labels are red, but the alpha value is proportional to the score (the higher the score, the less transparent the colour).
+
+The statistics method has a binary output. Anomalies are displayed with a score of 1.
+
+For the machine learning method, the displayed scores of the whole trace are normalized with regards to the minimum and maximum scores, which is the effective output of the neural network. Therefore, everything is relative: a higher score only means it doesn't fit the model as well as the rest.
+
+
+== Pipeline description ==
+
+Here is a short description of the processing pipeline, which takes results from the callstack analysis and generates bookmarks.
+
+=== Arrays generation ===
+
+First, the callstack analysis is used to acquire callstack data. The targeted callstacks are processed a first time to collect metadata. This includes the maximum depth and information about the calls. During the second processing of the targeted callstacks, this information is used to convert each individual callstack to an array, which can be later processed or fed to a neural network. These callstack arrays, as well as a file containing metadata, are written to a supplementary file so that they can be used again if multiple analyses are run on the same trace. Obviously, deleting the trace's supplementary files means this processing will have to be done again.
+
+=== Arrays processing ===
+
+No matter the selected method or action, the arrays are used similarly. A container interface helps reading the serialized callstack arrays. They are read and processed one by one (or in batches) from the file. After processing, the score is written to the callstack anomaly analysis' state system. After all the callstack arrays have been processed, the minimum and maximum scores are also sent to the state system.
+
+=== Results displaying ===
+
+After the callstack anomaly analysis has completed, the Flame Chart view goes through the analysis' state system and creates a bookmark for each score if it's equal or above the threshold (if applicable).
+
+
+== Further work ==
+
+* compare with other deep learning libraries
+* review NN input method, find a more robust method than callstack arrays
+* investigate additional data points (other than offset & selftime, e.g. number of children)
+* investigate direct use of trace events as a time series
+* investigate additional models (convolutional NN), different parameters (hidden layers/nodes, LSTM)
+* define "anomaly" or "fault", inject them in traces and validate that they can be detected
+* apply to cloud/distributed applications
+* apply to live anomaly/fault detection
