@@ -667,8 +667,8 @@ public class CallStackSeries implements ISegmentStore<ISegment> {
                 if (hostThread == null) {
                     hostThread = new HostThread(StringUtils.EMPTY, IHostModel.UNKNOWN_TID);
                 }
-                return CalledFunctionFactory.create(interval.getStartTime(), interval.getEndTime() + 1, interval.getValue(), -1, hostThread.getTid(),
-                        null, ModelManager.getModelFor(hostThread.getHost()));
+                return CalledFunctionFactory.create(interval.getStartTime(), interval.getEndTime() + 1, Integer.parseInt(stateSystem.getAttributeName(interval.getAttribute())),
+                        interval.getValue(), -1, hostThread.getTid(), null, ModelManager.getModelFor(hostThread.getHost()));
             };
             return Iterables.transform(query2d, fct);
         } catch (StateSystemDisposedException e) {

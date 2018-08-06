@@ -121,7 +121,7 @@ public class CallStack {
                 }
                 if (!callInterval.getStateValue().isNull()) {
                     int threadId = getThreadId(callInterval.getStartTime());
-                    callList.add(CalledFunctionFactory.create(callInterval.getStartTime(), callInterval.getEndTime() + 1, callInterval.getValue(), getSymbolKeyAt(callInterval.getStartTime()), threadId,
+                    callList.add(CalledFunctionFactory.create(callInterval.getStartTime(), callInterval.getEndTime() + 1, depth, callInterval.getValue(), getSymbolKeyAt(callInterval.getStartTime()), threadId,
                             null, ModelManager.getModelFor(getHostId(callInterval.getStartTime()))));
                 }
             }
@@ -169,7 +169,7 @@ public class CallStack {
                 interval = fStateSystem.querySingleState(interval.getEndTime() + 1, fQuarks.get(depth - 1));
             }
             if (!interval.getStateValue().isNull() && interval.getStartTime() >= time) {
-                return CalledFunctionFactory.create(interval.getStartTime(), interval.getEndTime() + 1, interval.getValue(), getSymbolKeyAt(interval.getStartTime()), getThreadId(interval.getStartTime()), null,
+                return CalledFunctionFactory.create(interval.getStartTime(), interval.getEndTime() + 1, depth, interval.getValue(), getSymbolKeyAt(interval.getStartTime()), getThreadId(interval.getStartTime()), null,
                         ModelManager.getModelFor(getHostId(time)));
             }
         } catch (StateSystemDisposedException e) {
@@ -215,8 +215,7 @@ public class CallStack {
                 interval = fStateSystem.querySingleState(interval.getEndTime() + 1, fQuarks.get(depth - 1));
             }
             if (!interval.getStateValue().isNull() && interval.getStartTime() < end) {
-                return CalledFunctionFactory.create(Math.max(start, interval.getStartTime()), Math.min(end, interval.getEndTime() + 1), interval.getValue(), getSymbolKeyAt(interval.getStartTime()), getThreadId(interval.getStartTime()), parent,
-                        model);
+                return CalledFunctionFactory.create(Math.max(start, interval.getStartTime()), Math.min(end, interval.getEndTime() + 1), depth, interval.getValue(), getSymbolKeyAt(interval.getStartTime()), getThreadId(interval.getStartTime()), parent, model);
             }
         } catch (StateSystemDisposedException e) {
 
@@ -520,6 +519,7 @@ public class CallStack {
         int threadId = getThreadId(callInterval.getStartTime());
         return CalledFunctionFactory.create(callInterval.getStartTime(),
                 callInterval.getEndTime() + 1,
+                0,
                 callInterval.getValue(),
                 getSymbolKeyAt(callInterval.getStartTime()),
                 threadId,
