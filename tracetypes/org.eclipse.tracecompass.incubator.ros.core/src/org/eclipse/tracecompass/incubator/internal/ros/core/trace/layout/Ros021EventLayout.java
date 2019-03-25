@@ -66,6 +66,15 @@ public class Ros021EventLayout implements IRosEventLayout {
     }
 
     // ------------------------------------------------------------------------
+    // connection_dropped
+    // ------------------------------------------------------------------------
+
+    @Override
+    public String eventConnectionDropped() {
+        return "roscpp:connection_dropped";
+    }
+
+    // ------------------------------------------------------------------------
     // subscriber_callback_added
     // ------------------------------------------------------------------------
 

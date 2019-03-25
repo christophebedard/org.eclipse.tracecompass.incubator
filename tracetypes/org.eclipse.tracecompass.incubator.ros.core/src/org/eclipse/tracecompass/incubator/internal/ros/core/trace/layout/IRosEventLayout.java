@@ -87,6 +87,13 @@ public interface IRosEventLayout {
     String eventNewConnection();
 
     /**
+     * <code>connection_dropped</code>,
+     * when a "unique" connection between publisher/subscriber or service
+     * client/server has been dropped (one for each end of the connection)
+     */
+    String eventConnectionDropped();
+
+    /**
      * <code>subscriber_callback_added</code>,
      * when a subscriber callback is added
      */

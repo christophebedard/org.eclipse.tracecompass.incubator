@@ -76,6 +76,33 @@ public class RosConnectionsStateProvider extends AbstractRosStateProvider {
 
             return;
         }
+
+        // FIXME instrumentation needs to be fixed before this can be useful
+        // some information (e.g. hosts/ports) is not always available when a connection is dropped
+//        // connection_dropped
+//        if (isEvent(event, fLayout.eventConnectionDropped())) {
+//            long timestamp = event.getTimestamp().toNanos();
+//            String nodeName = getNodeName(event);
+//            String channelType = (String) getField(event, fLayout.fieldChannelType());
+//            String name = (String) getField(event, fLayout.fieldName());
+////            String localHostPort = (String) getField(event, fLayout.fieldLocalHostport());
+////            String remoteHostPort = (String) getField(event, fLayout.fieldRemoteHostport());
+//            // TODO check that it matches
+//            // FIXME might have to use channel_ref
+////             String localRemoteHosts = getLocalAndRemoteCombo(localHostPort, remoteHostPort);
+//
+//            // Decrement number of remote connections to local host port
+//            int typeQuark = ss.getQuarkAbsoluteAndAdd(nodeName, channelType);
+//            Object typeCounterObject = ss.queryOngoing(typeQuark);
+//            int typeCounter = (typeCounterObject != null) ? ((Integer) typeCounterObject) - 1 : 0;
+//            ss.modifyAttribute(timestamp, typeCounter, typeQuark);
+//
+//            // Pop remote and local
+//            int connectionQuark = ss.getQuarkRelativeAndAdd(typeQuark, name);
+//            ss.popAttribute(timestamp, connectionQuark);
+//
+//            return;
+//        }
     }
 
     private static String getLocalAndRemoteCombo(String local, String remote) {
