@@ -67,11 +67,21 @@ public class RosMessagesTransportEventMatchingProcessing implements IMatchProces
 
     @Override
     public void addMatch(@NonNull IEventMatchingKey eventKey, @NonNull TmfEventDependency match) {
+        // TcpEventKey
         if (!(eventKey instanceof RosMessagesTransportEventKey)) {
             return;
         }
 
+        // TcpEventKey
         RosMessagesTransportEventKey key = (RosMessagesTransportEventKey) eventKey;
+
+        // TODO
+        // Get timestamp from match
+        //   match.getSource().getTimestamp()
+        // Then get event at that timestamp
+        //   match.getSource() --> event request?
+        // then extract source and destination endpoints
+
         // Might not be an actual ROS message
         if (!isValidMessageMatch(key)) {
             return;

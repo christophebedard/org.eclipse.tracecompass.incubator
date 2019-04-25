@@ -60,7 +60,7 @@ public class RosMessagesTransportModel implements IRosMessagesTransportModel {
             TmfEventMatching.registerMatchObject(sfMatching);
         }
 
-        fMatching.matchEvents();
+        fMatching.matchEvents(RosMessagesTransportEventMatching.class);
         fMessageTransports = fProcessingUnit.getMatches();
     }
 
