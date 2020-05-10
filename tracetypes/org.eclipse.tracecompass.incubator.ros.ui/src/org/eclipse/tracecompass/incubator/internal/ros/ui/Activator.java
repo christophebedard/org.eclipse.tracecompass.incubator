@@ -13,6 +13,7 @@ package org.eclipse.tracecompass.incubator.internal.ros.ui;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.tracecompass.tmf.core.preferences.DefaultTraceLocation;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -23,6 +24,8 @@ public class Activator extends AbstractUIPlugin {
 
     /** The plugin ID */
     public static final String PLUGIN_ID = "org.eclipse.tracecompass.incubator.ros.ui"; //$NON-NLS-1$
+
+    private static final String DEFAULT_TRACE_LOCATION = "~/.ros/tracing"; //$NON-NLS-1$
 
     // The shared instance
     private static @Nullable Activator plugin;
@@ -37,6 +40,7 @@ public class Activator extends AbstractUIPlugin {
     public void start(@Nullable BundleContext context) throws Exception {
         super.start(context);
         plugin = this;
+        DefaultTraceLocation.addLocation(DEFAULT_TRACE_LOCATION);
     }
 
     @Override
