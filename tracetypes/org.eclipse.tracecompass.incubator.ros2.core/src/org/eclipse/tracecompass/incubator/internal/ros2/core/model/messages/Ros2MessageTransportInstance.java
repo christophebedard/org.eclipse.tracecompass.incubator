@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.datastore.core.serialization.ISafeByteBufferReader;
 import org.eclipse.tracecompass.datastore.core.serialization.ISafeByteBufferWriter;
 import org.eclipse.tracecompass.incubator.internal.ros2.core.model.objects.Ros2ObjectHandle;
-import org.eclipse.tracecompass.internal.provisional.statesystem.core.statevalue.CustomStateValue;
+import org.eclipse.tracecompass.statesystem.core.statevalue.CustomStateValue;
 import org.eclipse.tracecompass.statesystem.core.statevalue.ITmfStateValue;
 
 /**
@@ -27,7 +27,6 @@ import org.eclipse.tracecompass.statesystem.core.statevalue.ITmfStateValue;
  *
  * @author Christophe Bedard
  */
-@SuppressWarnings("restriction")
 public class Ros2MessageTransportInstance extends CustomStateValue {
 
     /** Custom type value ID for this object */

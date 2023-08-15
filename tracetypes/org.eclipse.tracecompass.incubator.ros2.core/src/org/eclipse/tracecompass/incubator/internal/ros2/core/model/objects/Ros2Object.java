@@ -14,7 +14,7 @@ package org.eclipse.tracecompass.incubator.internal.ros2.core.model.objects;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.datastore.core.serialization.ISafeByteBufferWriter;
 import org.eclipse.tracecompass.incubator.internal.ros2.core.model.HostProcessValue;
-import org.eclipse.tracecompass.internal.provisional.statesystem.core.statevalue.CustomStateValue;
+import org.eclipse.tracecompass.statesystem.core.statevalue.CustomStateValue;
 import org.eclipse.tracecompass.statesystem.core.statevalue.ITmfStateValue;
 
 import com.google.common.base.Objects;
@@ -26,7 +26,6 @@ import com.google.common.base.Objects;
  * @param <T>
  *            the type of the object's handle object
  */
-@SuppressWarnings("restriction")
 public abstract class Ros2Object<@NonNull T extends HostProcessValue<?>> extends CustomStateValue {
 
     private final @NonNull T fHandle;

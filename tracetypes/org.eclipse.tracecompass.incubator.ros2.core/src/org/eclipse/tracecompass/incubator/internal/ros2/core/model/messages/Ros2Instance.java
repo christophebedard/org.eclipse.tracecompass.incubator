@@ -16,7 +16,7 @@ import java.util.Objects;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.datastore.core.serialization.ISafeByteBufferWriter;
 import org.eclipse.tracecompass.incubator.internal.ros2.core.model.HostProcessPointer;
-import org.eclipse.tracecompass.internal.provisional.statesystem.core.statevalue.CustomStateValue;
+import org.eclipse.tracecompass.statesystem.core.statevalue.CustomStateValue;
 import org.eclipse.tracecompass.statesystem.core.statevalue.ITmfStateValue;
 
 /**
@@ -26,7 +26,6 @@ import org.eclipse.tracecompass.statesystem.core.statevalue.ITmfStateValue;
  * @param <T>
  *            the type of the object from which the instance originates
  */
-@SuppressWarnings("restriction")
 public abstract class Ros2Instance<@NonNull T extends HostProcessPointer> extends CustomStateValue {
 
     private final @NonNull T fOriginHandle;

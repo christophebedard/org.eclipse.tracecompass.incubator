@@ -15,7 +15,7 @@ import java.util.Comparator;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.datastore.core.serialization.ISafeByteBufferWriter;
-import org.eclipse.tracecompass.internal.provisional.statesystem.core.statevalue.CustomStateValue;
+import org.eclipse.tracecompass.statesystem.core.statevalue.CustomStateValue;
 import org.eclipse.tracecompass.statesystem.core.statevalue.ITmfStateValue;
 
 import com.google.common.base.Objects;
@@ -28,7 +28,6 @@ import com.google.common.base.Objects;
  * @param <T>
  *            the type of the wrapped value
  */
-@SuppressWarnings("restriction")
 public abstract class HostProcessValue<@NonNull T extends Comparable<T>> extends CustomStateValue {
 
     private static Comparator<HostProcessValue<?>> COMPARATOR = Comparator.comparing((HostProcessValue<?> h) -> h.getHostProcess())

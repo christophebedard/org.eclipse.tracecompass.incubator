@@ -27,12 +27,11 @@ import org.eclipse.tracecompass.incubator.internal.ros2.core.model.objects.Ros2O
 import org.eclipse.tracecompass.incubator.internal.ros2.core.model.objects.Ros2PublisherObject;
 import org.eclipse.tracecompass.incubator.internal.ros2.core.model.objects.Ros2SubscriptionObject;
 import org.eclipse.tracecompass.incubator.internal.ros2.core.model.objects.Ros2TimerObject;
-import org.eclipse.tracecompass.internal.provisional.statesystem.core.statevalue.CustomStateValue;
+import org.eclipse.tracecompass.statesystem.core.statevalue.CustomStateValue;
 
 /**
  * Activator
  */
-@SuppressWarnings("restriction")
 public class Activator extends TraceCompassActivator {
 
     /** The plug-in ID */

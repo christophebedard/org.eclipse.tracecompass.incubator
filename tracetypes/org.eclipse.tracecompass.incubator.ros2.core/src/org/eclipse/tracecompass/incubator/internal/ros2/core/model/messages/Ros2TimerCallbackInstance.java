@@ -29,7 +29,6 @@ public class Ros2TimerCallbackInstance extends Ros2Instance<@NonNull Ros2ObjectH
     /** Custom type value ID for this object */
     public static final short CUSTOM_TYPE_ID = 69;
     /** CustomStateValueFactory for this object */
-    @SuppressWarnings("restriction")
     public static final @NonNull CustomStateValueFactory ROS2_TIMER_CALLBACK_INSTANCE_VALUE_FACTORY = Ros2TimerCallbackInstance::read;
 
     private final @NonNull Ros2CallbackInstance fCallbackInstance;

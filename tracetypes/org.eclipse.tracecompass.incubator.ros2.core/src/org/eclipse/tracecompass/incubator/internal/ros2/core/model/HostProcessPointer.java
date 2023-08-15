@@ -29,7 +29,6 @@ public class HostProcessPointer extends HostProcessValue<@NonNull Long> {
     /** Custom type value ID for this object */
     public static final short CUSTOM_TYPE_ID_HOST_PROCESS_POINTER = 73;
     /** CustomStateValueFactory for this object */
-    @SuppressWarnings("restriction")
     public static final @NonNull CustomStateValueFactory HOST_PROCESS_POINTER_VALUE_FACTORY = b -> HostProcessPointer.read(b);
 
     private static final @NonNull String HEX_PREFIX = "0x"; //$NON-NLS-1$

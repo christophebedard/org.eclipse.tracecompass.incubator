@@ -13,7 +13,7 @@ package org.eclipse.tracecompass.incubator.internal.callstack.core;
 
 import org.eclipse.tracecompass.common.core.TraceCompassActivator;
 import org.eclipse.tracecompass.incubator.callstack.core.base.EdgeStateValue;
-import org.eclipse.tracecompass.internal.provisional.statesystem.core.statevalue.CustomStateValue;
+import org.eclipse.tracecompass.statesystem.core.statevalue.CustomStateValue;
 
 /**
  * Activator

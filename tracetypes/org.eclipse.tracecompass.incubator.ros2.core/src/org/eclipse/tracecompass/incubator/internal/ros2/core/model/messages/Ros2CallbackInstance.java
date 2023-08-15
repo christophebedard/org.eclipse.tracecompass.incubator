@@ -28,7 +28,6 @@ public class Ros2CallbackInstance extends Ros2Instance<@NonNull Ros2ObjectHandle
     /** Custom type value ID for this object */
     public static final short CUSTOM_TYPE_ID = 67;
     /** CustomStateValueFactory for this object */
-    @SuppressWarnings("restriction")
     public static final @NonNull CustomStateValueFactory ROS2_CALLBACK_INSTANCE_VALUE_FACTORY = Ros2CallbackInstance::read;
 
     private final long fTid;
