@@ -27,7 +27,7 @@ import com.google.common.base.Objects;
 public class Ros2SubCallbackInstance extends Ros2Instance<@NonNull Ros2ObjectHandle> {
 
     /** Custom type value ID for this object */
-    public static final byte CUSTOM_TYPE_ID = 68;
+    public static final short CUSTOM_TYPE_ID = 68;
     /** CustomStateValueFactory for this object */
     @SuppressWarnings("restriction")
     public static final @NonNull CustomStateValueFactory ROS2_SUB_CALLBACK_INSTANCE_VALUE_FACTORY = Ros2SubCallbackInstance::read;
@@ -101,7 +101,7 @@ public class Ros2SubCallbackInstance extends Ros2Instance<@NonNull Ros2ObjectHan
     }
 
     @Override
-    protected @NonNull Byte getCustomTypeId() {
+    protected @NonNull Short getCustomTypeId() {
         return CUSTOM_TYPE_ID;
     }
 

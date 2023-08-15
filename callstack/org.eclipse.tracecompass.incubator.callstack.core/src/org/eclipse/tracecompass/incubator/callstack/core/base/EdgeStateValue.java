@@ -35,7 +35,7 @@ public class EdgeStateValue extends CustomStateValue {
     /**
      * The Custom Type value ID for {@link EdgeStateValue}s.
      */
-    public static final byte CUSTOM_TYPE_ID = 22;
+    public static final short CUSTOM_TYPE_ID = 22;
     /**
      * The {@link CustomStateValueFactory} for {@link EdgeStateValue}s
      */
@@ -113,7 +113,7 @@ public class EdgeStateValue extends CustomStateValue {
     }
 
     @Override
-    protected @NonNull Byte getCustomTypeId() {
+    protected @NonNull Short getCustomTypeId() {
         return CUSTOM_TYPE_ID;
     }
 

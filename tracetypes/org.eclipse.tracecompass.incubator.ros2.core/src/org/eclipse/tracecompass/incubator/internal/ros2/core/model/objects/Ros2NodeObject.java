@@ -26,7 +26,7 @@ import com.google.common.base.Objects;
 public class Ros2NodeObject extends Ros2Object<@NonNull Ros2ObjectHandle> {
 
     /** Custom type value ID for this object */
-    public static final byte CUSTOM_TYPE_ID = 60;
+    public static final short CUSTOM_TYPE_ID = 60;
     /** CustomStateValueFactory for this object */
     @SuppressWarnings("restriction")
     public static final @NonNull CustomStateValueFactory ROS2_NODE_OBJECT_VALUE_FACTORY = b -> Ros2NodeObject.read(b);
@@ -95,7 +95,7 @@ public class Ros2NodeObject extends Ros2Object<@NonNull Ros2ObjectHandle> {
     }
 
     @Override
-    protected @NonNull Byte getCustomTypeId() {
+    protected @NonNull Short getCustomTypeId() {
         return CUSTOM_TYPE_ID;
     }
 

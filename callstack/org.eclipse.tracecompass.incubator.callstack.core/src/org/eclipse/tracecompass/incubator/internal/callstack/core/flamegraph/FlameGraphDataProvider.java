@@ -200,7 +200,7 @@ public class FlameGraphDataProvider<@NonNull N, E, @NonNull T extends WeightedTr
         }
 
         @Override
-        protected Byte getCustomTypeId() {
+        protected Short getCustomTypeId() {
             return 103;
         }
 

@@ -32,7 +32,7 @@ import org.eclipse.tracecompass.incubator.internal.ros2.core.model.HostProcessPo
 public class Ros2ObjectHandle extends HostProcessPointer {
 
     /** Custom type value ID for this object */
-    public static final byte CUSTOM_TYPE_ID_ROS2_OBJECT_HANDLE = 74;
+    public static final short CUSTOM_TYPE_ID_ROS2_OBJECT_HANDLE = 74;
     /** CustomStateValueFactory for this object */
     @SuppressWarnings("restriction")
     public static final @NonNull CustomStateValueFactory ROS2_OBJECT_HANDLE_VALUE_FACTORY = b -> Ros2ObjectHandle.read(b);
@@ -64,7 +64,7 @@ public class Ros2ObjectHandle extends HostProcessPointer {
     }
 
     @Override
-    protected @NonNull Byte getCustomTypeId() {
+    protected @NonNull Short getCustomTypeId() {
         return CUSTOM_TYPE_ID_ROS2_OBJECT_HANDLE;
     }
 

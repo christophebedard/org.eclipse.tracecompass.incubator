@@ -31,7 +31,7 @@ import org.eclipse.tracecompass.statesystem.core.statevalue.ITmfStateValue;
 public class Ros2CallbackPublicationInstance extends CustomStateValue {
 
     /** Custom type value ID for this object */
-    public static final byte CUSTOM_TYPE_ID = 71;
+    public static final short CUSTOM_TYPE_ID = 71;
     /** CustomStateValueFactory for this object */
     public static final @NonNull CustomStateValueFactory ROS2_CALLBACK_PUBLICATION_INSTANCE_VALUE_FACTORY = Ros2CallbackPublicationInstance::read;
 
@@ -120,7 +120,7 @@ public class Ros2CallbackPublicationInstance extends CustomStateValue {
     }
 
     @Override
-    protected @NonNull Byte getCustomTypeId() {
+    protected @NonNull Short getCustomTypeId() {
         return CUSTOM_TYPE_ID;
     }
 

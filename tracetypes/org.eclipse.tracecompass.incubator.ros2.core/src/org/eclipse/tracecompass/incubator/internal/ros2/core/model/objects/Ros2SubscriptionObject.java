@@ -26,7 +26,7 @@ import com.google.common.base.Objects;
 public class Ros2SubscriptionObject extends Ros2PubSubObject {
 
     /** Custom type value ID for this object */
-    public static final byte CUSTOM_TYPE_ID = 62;
+    public static final short CUSTOM_TYPE_ID = 62;
     /** CustomStateValueFactory for this object */
     @SuppressWarnings("restriction")
     public static final @NonNull CustomStateValueFactory ROS2_SUBSCRIPTION_OBJECT_VALUE_FACTORY = b -> Ros2SubscriptionObject.read(b);
@@ -123,7 +123,7 @@ public class Ros2SubscriptionObject extends Ros2PubSubObject {
     }
 
     @Override
-    protected @NonNull Byte getCustomTypeId() {
+    protected @NonNull Short getCustomTypeId() {
         return CUSTOM_TYPE_ID;
     }
 

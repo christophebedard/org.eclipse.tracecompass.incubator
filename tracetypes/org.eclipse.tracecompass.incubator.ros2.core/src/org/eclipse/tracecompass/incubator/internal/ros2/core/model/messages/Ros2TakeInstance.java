@@ -27,7 +27,7 @@ import org.eclipse.tracecompass.incubator.internal.ros2.core.model.objects.Ros2O
 public class Ros2TakeInstance extends Ros2Instance<@NonNull Ros2ObjectHandle> {
 
     /** Custom type value ID for this object */
-    public static final byte CUSTOM_TYPE_ID = 66;
+    public static final short CUSTOM_TYPE_ID = 66;
     /** CustomStateValueFactory for this object */
     @SuppressWarnings("restriction")
     public static final @NonNull CustomStateValueFactory ROS2_TAKE_INSTANCE_VALUE_FACTORY = Ros2TakeInstance::read;
@@ -136,7 +136,7 @@ public class Ros2TakeInstance extends Ros2Instance<@NonNull Ros2ObjectHandle> {
     }
 
     @Override
-    protected @NonNull Byte getCustomTypeId() {
+    protected @NonNull Short getCustomTypeId() {
         return CUSTOM_TYPE_ID;
     }
 
